@@ -1,0 +1,21 @@
+nav {
+    text-transform: uppercase;
+    border-bottom: 2px solid gray;
+    width: 30%;
+    margin-left: calc(10%/6);
+    padding: 20px 0;
+    font-family: "National Park", sans-serif;
+    font-size: 3em;
+    font-weight: 800;
+}
+
+main {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+}
+
+img {
+    width: 30%;
+    margin: calc(10%/6);
+}
