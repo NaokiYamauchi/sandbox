@@ -1,54 +1,85 @@
 const express = require('express');
+const app = express();
 const morgan = require('morgan');
 
-const app = express();
-const PORT = 3000;
+const AppError = require('./AppError');
 
-// Use morgan for concise logging
-app.use(morgan('dev'));
-
-// // Custom middleware example
-// app.use((req, res, next) => {
-//     console.log('Custom middleware: Hey!');
-//     next(); // Important to call next() to pass control to the next middleware
-// });
+app.use(morgan('tiny'));
 
 app.use((req, res, next) => {
+    req.requestTime = Date.now();
     console.log(req.method, req.path);
     next();
 });
 
 app.use('/dogs', (req, res, next) => {
-    console.log('DOGS!!!');
+    console.log('Dogggg!!');
     next();
 });
 
 const verifyPassword = (req, res, next) => {
     const { password } = req.query;
-    if (password === 'secret') {
+    if (password === 'supersecret') {
         return next();
     }
-    res.send('Password is Needed');
-};
+    // res.send('Password is required');
+    throw new AppError('Password is required', 401);
+}
 
-// Routes
+// app.use((req, res, next) => {
+//     console.log('First middleware!!!');
+//     return next();
+//     console.log('After next() in the first middleware!!!');
+// });
+// app.use((req, res, next) => {
+//     console.log('Second middleware!!!');
+//     return next();
+// });
+// app.use((req, res, next) => {
+//     console.log('Third middleware!!!');
+//     return next();
+// });
+
 app.get('/', (req, res) => {
-    res.send('Homepage');
+    console.log(`Request time: ${req.requestTime}`);
+    res.send('Homepage!!');
+});
+
+app.get('/error', (req, res) => {
+    hoge.moge();
 });
 
 app.get('/dogs', (req, res) => {
-    res.send('Dog Person!!');
+    console.log(`Request time: ${req.requestTime}`);
+    res.send('Woof woof');
 });
 
-app.get('/secret', verifyPassword, (req, res, next) => {
-    res.send('This is a secret page');
+app.get('/secret', verifyPassword, (req, res) => {
+    res.send('This is a secret page!! Don’t tell anyone!!');
+});
+
+app.get('/admin', (req, res) => {
+    throw new AppError('Only administrators can access!', 403);
 });
 
 app.use((req, res) => {
-    res.status(404).send('404: No Page Found');
+    res.status(404).send('Page not found');
 });
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+// app.use((err, req, res, next) => {
+//     console.log('********************************');
+//     console.log('************** ERROR **************');
+//     console.log('********************************');
+//     // res.status(500).send('An error occurred!!!');
+//     console.log(err);
+//     next(err);
+// });
+
+app.use((err, req, res, next) => {
+    const { status = 500, message = 'An error occurred' } = err;
+    res.status(status).send(message);
+});
+
+app.listen(3000, () => {
+    console.log('Listening on localhost:3000...');
 });
