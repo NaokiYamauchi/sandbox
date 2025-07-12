@@ -25,7 +25,7 @@ async function showBoard() {
 			// <div class="square">
 			const squareElement = document.createElement('div');
 			squareElement.className = 'square';
-
+			z;
 			if (square !== EMPTY) {
 				// <div class="stone dark">
 				const stoneElement = document.createElement('div');
