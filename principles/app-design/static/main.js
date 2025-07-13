@@ -25,7 +25,7 @@ async function showBoard() {
 			// <div class="square">
 			const squareElement = document.createElement('div');
 			squareElement.className = 'square';
-			z;
+
 			if (square !== EMPTY) {
 				// <div class="stone dark">
 				const stoneElement = document.createElement('div');
@@ -40,7 +40,14 @@ async function showBoard() {
 	});
 }
 
+async function registerGame() {
+	await fetch('/api/games', {
+		method: 'POST',
+	});
+}
+
 async function main() {
+	await registerGame();
 	await showBoard();
 }
 
