@@ -1,7 +1,7 @@
 import mysql from 'mysql2/promise';
 import { GameRecord } from './gameRecord';
 
-export class GameGateWay {
+export class GameGateway {
 	async findLatest(conn: mysql.Connection): Promise<GameRecord | undefined> {
 		const gameSelectResult = await conn.execute<mysql.RowDataPacket[]>(
 			'select id, started_at from games order by id desc limit 1'
