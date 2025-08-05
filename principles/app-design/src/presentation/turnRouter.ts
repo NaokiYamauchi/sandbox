@@ -1,43 +1,19 @@
 import express from 'express';
-import morgan from 'morgan';
-import { connectMySQL } from './dataaccess/connection';
-import { GameGateway } from './dataaccess/gameGateway';
-import { MoveGateway } from './dataaccess/moveGateway';
-import { SquareGateway } from './dataaccess/squareGateway';
-import { TurnGateway } from './dataaccess/turnGateway';
-import { gameRouter } from './presentation/gameRouter';
+import { DARK, LIGHT } from '../application/constants';
+import { connectMySQL } from '../dataaccess/connection';
+import { GameGateway } from '../dataaccess/gameGateway';
+import { MoveGateway } from '../dataaccess/moveGateway';
+import { SquareGateway } from '../dataaccess/squareGateway';
+import { TurnGateway } from '../dataaccess/turnGateway';
 
-const EMPTY = 0;
-const DARK = 1;
-const LIGHT = 2;
-
-const INITIAL_BOARD = [
-	[EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-	[EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-	[EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-	[EMPTY, EMPTY, EMPTY, DARK, LIGHT, EMPTY, EMPTY, EMPTY],
-	[EMPTY, EMPTY, EMPTY, LIGHT, DARK, EMPTY, EMPTY, EMPTY],
-	[EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-	[EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-	[EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-];
-
-const PORT = 3000;
-
-const app = express();
-
-app.use(morgan('dev'));
-app.use(express.static('static', { extensions: ['html'] }));
-app.use(express.json());
+export const turnRouter = express.Router();
 
 const gameGateway = new GameGateway();
 const turnGateway = new TurnGateway();
 const moveGateway = new MoveGateway();
 const squareGateway = new SquareGateway();
 
-app.use(gameRouter);
-
-app.get('/api/games/latest/turns/:turnCount', async (req, res) => {
+turnRouter.get('/api/games/latest/turns/:turnCount', async (req, res) => {
 	const turnCount = parseInt(req.params.turnCount);
 
 	const conn = await connectMySQL();
@@ -78,7 +54,7 @@ app.get('/api/games/latest/turns/:turnCount', async (req, res) => {
 	}
 });
 
-app.post('/api/games/latest/turns', async (req, res) => {
+turnRouter.post('/api/games/latest/turns', async (req, res) => {
 	const turnCount = parseInt(req.body.turnCount);
 	const disc = parseInt(req.body.move.disc);
 	const x = parseInt(req.body.move.x);
@@ -140,8 +116,4 @@ app.post('/api/games/latest/turns', async (req, res) => {
 	}
 
 	res.status(201).end();
-});
-
-app.listen(PORT, () => {
-	console.log(`Othello application started: http://localhost:${PORT}`);
 });
